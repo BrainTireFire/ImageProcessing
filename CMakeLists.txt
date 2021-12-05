@@ -3,4 +3,4 @@ project(ImageProcessing)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(ImageProcessing main.cpp)
+add_executable(ImageProcessing main.cpp src/ImageProcess.cpp Headers/ImageProcess.h)

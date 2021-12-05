@@ -1,55 +1,39 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include "./Headers/ImageProcess.h"
 
-#define BMP_HEADER_SIZE         54
-#define BMP_COLOR_TABLE_SIZE    1024
-#define CUSTOM_IMG_SIZE         1024*1024
+using namespace std;
 
 int main() {
-    FILE *streamIn = fopen("C:/Users/brAiN/CLionProjects/ImageProcessing/images/cameraman.bmp","rb");
-    FILE *fo = fopen("C:/Users/brAiN/CLionProjects/ImageProcessing/images/cameraman_copy.bmp","wb");
+    int imgWidth, imgHeight, imgBitDepth;
+    unsigned char imgHeader[BMP_HEADER_SIZE];
+    unsigned char imgColorTable[BMP_COLOR_TABLE_SIZE];
+    unsigned char imgInBuffer[_512by512_IMG_SIZE];
+    unsigned char imgOutBuffer[_512by512_IMG_SIZE];
 
-    if(streamIn ==(FILE*)0)
-    {
-        printf("Unable to open file\n");
-    }
-    unsigned char header[54];
-    unsigned char colorTable[1024];
+    const char imgName[] ="../images/lena512.png";
+    const char newImgName[] ="../images/lena512_bright4.png";
 
-    for(int i =0;i<54;i++)
-    {
-        header[i] =getc(streamIn);
+    ImageProcess *myImage  = new ImageProcess(imgName,
+                                                    newImgName,
+                                                    &imgHeight,
+                                                    &imgWidth,
+                                                    &imgBitDepth,
+                                                    &imgHeader[0],
+                                                    &imgColorTable[0],
+                                                    &imgInBuffer[0],
+                                                    &imgOutBuffer[0]
+    );
 
-    }
+    myImage->readImage();
 
-    int width = *(int *)&header[18];
-    int height = *(int *)&header[22];
-    int bitDepth = *(int *)&header[28];
+    myImage->brigthnessUp(imgInBuffer,imgOutBuffer,_512by512_IMG_SIZE,150);
+    myImage->writeImage();
 
-    if(bitDepth<=8)
-    {
-        fread(colorTable,sizeof(unsigned char), 1024,streamIn);
-    }
-
-    fwrite(header,sizeof(unsigned char),54,fo);
-    unsigned char buf[height * width];
-    fread(buf,sizeof(unsigned char),(height*width), streamIn);
-
-    if(bitDepth <=8)
-    {
-
-        fwrite(colorTable,sizeof(unsigned char),1024,fo);
-    }
-    fwrite(buf,sizeof(unsigned char),(height *width),fo);
-    fclose(fo);
-    fclose(streamIn);
-
-    printf("Success !\n");
-    printf("Width : %d\n", width);
-    printf("Height : %d\n",height);
+    cout<<"Success !"<<endl;
+    cout<<"Image Height : "<<imgHeight<<endl;
+    cout<<"Image Width  : "  <<imgWidth<<endl;
 
     return 0;
 }
-
-void imageReader()
